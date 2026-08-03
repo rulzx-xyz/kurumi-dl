@@ -1,14 +1,19 @@
 {
   "name": "kurumi-dl-backend",
   "version": "1.0.0",
+  "description": "Backend untuk KURUMI DL — jembatan antara frontend dan instance cobalt self-hosted",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node --env-file=.env server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }
+

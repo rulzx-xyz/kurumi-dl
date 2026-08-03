@@ -11,6 +11,22 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
+// Muat .env cuma kalau filenya ada (misal di Termux). Di platform seperti
+// Railway, environment variable sudah di-inject langsung, jadi gak butuh file.
+(function loadEnvFile(){
+  const envPath = path.join(__dirname, '.env');
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, 'utf-8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const idx = trimmed.indexOf('=');
+    if (idx === -1) continue;
+    const key = trimmed.slice(0, idx).trim();
+    const value = trimmed.slice(idx + 1).trim();
+    if (!(key in process.env)) process.env[key] = value;
+  }
+})();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
