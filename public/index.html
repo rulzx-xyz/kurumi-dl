@@ -722,13 +722,31 @@
       document.getElementById('adminUser').value = '';
       document.getElementById('adminPass').value = '';
       await checkAdminSession();
+      renderReviews();
       showToast('Login admin berhasil.');
     } catch(err){ showToast('Backend tidak terjangkau.'); }
   }
   function adminLogout(){
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     hideDashboardUI();
+    renderReviews();
     showToast('Keluar dari mode admin.');
+  }
+
+  async function deleteReview(index){
+    if(!confirm('Hapus ulasan ini?')) return;
+    const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+    try{
+      const res = await fetch('/api/admin/reviews/' + index, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': token },
+      });
+      const data = await res.json();
+      if(!data.ok){ showToast('Gagal hapus: ' + (data.error || '')); return; }
+      reviews = data.reviews;
+      renderReviews();
+      showToast('Ulasan dihapus.');
+    } catch(err){ showToast('Backend tidak terjangkau.'); }
   }
 
   // ================= DOWNLOAD =================
@@ -822,10 +840,13 @@
 
   function renderReviews(){
     const list = document.getElementById('reviewList');
-    list.innerHTML = reviews.map(r =>
+    const isAdmin = !!localStorage.getItem(ADMIN_TOKEN_KEY);
+    list.innerHTML = reviews.map((r, i) =>
       '<div class="hard-card review-card"><div class="top"><span>'+
       '<span class="filled">'+'★'.repeat(r.stars)+'</span>'+'☆'.repeat(5-r.stars)+
-      '</span><span><b>'+(r.name||'Anonim')+'</b> · '+r.time+'</span></div>'+r.text+'</div>'
+      '</span><span style="display:flex; align-items:center; gap:8px;"><b>'+(r.name||'Anonim')+'</b> · '+r.time+
+      (isAdmin ? ' <button onclick="deleteReview('+i+')" style="background:none; border:1px solid var(--red); color:var(--red); border-radius:100px; padding:2px 8px; font-size:.65rem; cursor:pointer;">Hapus</button>' : '') +
+      '</span></div>'+r.text+'</div>'
     ).join('');
 
     const avg = reviews.length ? (reviews.reduce((a,b)=>a+b.stars,0) / reviews.length) : 0;

@@ -95,6 +95,17 @@ app.post('/api/reviews', (req, res) => {
   res.json({ ok: true, reviews: data.reviews });
 });
 
+app.delete('/api/admin/reviews/:index', requireAdmin, (req, res) => {
+  const idx = parseInt(req.params.index, 10);
+  const data = loadData();
+  if (isNaN(idx) || idx < 0 || idx >= data.reviews.length) {
+    return res.status(400).json({ ok: false, error: 'Ulasan tidak ditemukan.' });
+  }
+  data.reviews.splice(idx, 1);
+  saveData(data);
+  res.json({ ok: true, reviews: data.reviews });
+});
+
 // Alamat instance cobalt kamu sendiri (WAJIB self-host, jangan pakai api.cobalt.tools
 // publik untuk project ini — instance publik pakai bot-protection dan tidak boleh
 // dipakai project luar tanpa izin).
@@ -162,5 +173,4 @@ app.post('/api/download', async (req, res) => {
 
 app.get('/health', (_req, res) => res.send('KURUMI DL backend aktif ✅'));
 
-app.listen(PORT, () => console.log(`KURUMI DL backend aktif di port ${PORT} (Domain: https://kurumi-download.my.id)`));
-
+app.listen(PORT, () => console.log(`Buka http://localhost:${PORT} di browser HP kamu`));
