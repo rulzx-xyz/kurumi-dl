@@ -162,4 +162,5 @@ app.post('/api/download', async (req, res) => {
 
 app.get('/health', (_req, res) => res.send('KURUMI DL backend aktif ✅'));
 
-app.listen(PORT, () => console.log(`Buka http://localhost:${PORT} di browser HP kamu`));
+app.listen(PORT, () => console.log(`KURUMI DL backend aktif di port ${PORT} (Domain: https://kurumi-download.my.id)`));
+
